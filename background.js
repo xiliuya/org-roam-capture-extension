@@ -25,6 +25,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
   if (details.reason == "install")
     chrome.storage.sync.set(
       {
+        selectedProtocol: 'roam-ref',
         selectedTemplate: 'p',
         unselectedTemplate: 'L',
         useNewStyleLinks: true,
@@ -34,6 +35,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
   else if ((details.reason == "update" && details.previousVersion.startsWith("0.1")))
     chrome.storage.sync.set(
       {
+        selectedProtocol: 'roam-ref',
         selectedTemplate: 'p',
         unselectedTemplate: 'L',
         useNewStyleLinks: false,

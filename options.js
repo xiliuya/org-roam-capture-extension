@@ -23,6 +23,7 @@
 
 // Saves options to chrome.storage.sync.
 function save_options() {
+    var selProto = document.getElementById('selProtocol').value;
     var selTemp = document.getElementById('selTemplate').value;
     var unselTemp = document.getElementById('unselTemplate').value;
     var NewStyleP = document.getElementById('useNewStyle').checked;
@@ -30,6 +31,7 @@ function save_options() {
     var overlayP = document.getElementById('overlay').checked;
 
     chrome.storage.sync.set({
+        selectedProtocol: selProto,
         selectedTemplate: selTemp,
         unselectedTemplate: unselTemp,
         useNewStyleLinks: NewStyleP,
@@ -50,12 +52,14 @@ function save_options() {
 function restore_options() {
     // Use default value color = 'red' and likesColor = true.
     chrome.storage.sync.get({
+        selectedProtocol: "roam-ref",
         selectedTemplate: 'p',
         unselectedTemplate: 'L',
         useNewStyleLinks: true,
         debug: false,
         overlay: true
     }, function(options) {
+        document.getElementById('selProtocol').value = options.selectedProtocol;
         document.getElementById('unselTemplate').value = options.unselectedTemplate;
         document.getElementById('selTemplate').value = options.selectedTemplate;
         document.getElementById('useNewStyle').checked = options.useNewStyleLinks;

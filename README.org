@@ -1,0 +1,30 @@
+#+author: xiliuya
+#+title: org-roam-capture-extension
+* Org Roam Capture Extension
+Fork with [[https://github.com/sprig/org-capture-extension][org-capture-extension]] .
+This is an extension for Google Chrome (tm) and Firefox (tm) which adds a "Capture" button, sending the site address, title, and selected text (if any) to emacs via org-protocol, see the [Org-Mode site] for instructions for setting that up org-protocol.
+* Get start
+- Set your org-roam templates
+#+begin_src emacs-lisp :tangle yes
+    (defun zp/org-protocol-insert-selection-dwim (selection)
+      "Insert SELECTION as an org blockquote."
+      (unless (string= selection "")
+        (format "#+begin_quote\n%s\n#+end_quote" selection)))
+
+    (setq org-roam-capture-ref-templates
+
+          '(("r" "ref" plain "* %U\n
+    %(zp/org-protocol-insert-selection-dwim \"%i\")%?"
+             :target (file+head "web/${slug}.org"
+                                "#+title: ${title}\n
+    ,#+roam_key: ${ref}\n
+    ,#+created: %u\n"
+                                )
+             :unnarrowed t)))
+#+end_src
+- Set org-roam dir
+#+begin_src emacs-lisp :tangle yes
+  (setq org-roam-directory "~/mydir")
+#+end_src
+- Seting org-protocol
+See [[file:README.old.md][README_old.md]] .

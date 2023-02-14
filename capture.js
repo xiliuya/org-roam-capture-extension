@@ -28,6 +28,11 @@
 
    createCaptureURI() {
      var protocol = "capture";
+     var protocol = this.protocol;
+
+     if (protocol == "roam-ref")
+       return "org-protocol://"+protocol+"?template="+"r"+'&ref='+this.encoded_url+'&title='+this.escaped_title+'&body='+this.selection_text;
+
      var template = (this.selection_text != "" ? this.selectedTemplate : this.unselectedTemplate);
      if (this.useNewStyleLinks)
        return "org-protocol://"+protocol+"?template="+template+'&url='+this.encoded_url+'&title='+this.escaped_title+'&body='+this.selection_text;
@@ -75,6 +80,7 @@
       }
 
       for(var k in options) this[k] = options[k];
+      this.protocol = options.selectedProtocol;
       this.capture();
     }
   }
