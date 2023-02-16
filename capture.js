@@ -20,31 +20,63 @@
 // THE SOFTWARE.								 //
 ///////////////////////////////////////////////////////////////////////////////////
 
-
 (function () {
-
-
   class Capture {
+    createCaptureURI() {
+      var protocol = "capture";
+      var protocol = this.protocol;
 
-   createCaptureURI() {
-     var protocol = "capture";
-     var protocol = this.protocol;
+      if (protocol == "roam-ref")
+        return (
+          "org-protocol://" +
+          protocol +
+          "?template=" +
+          "r" +
+          "&ref=" +
+          this.encoded_url +
+          "&title=" +
+          this.escaped_title +
+          "&body=" +
+          this.selection_html
+        );
 
-     if (protocol == "roam-ref")
-       return "org-protocol://"+protocol+"?template="+"r"+'&ref='+this.encoded_url+'&title='+this.escaped_title+'&body='+this.selection_html;
-
-     var template = (this.selection_text != "" ? this.selectedTemplate : this.unselectedTemplate);
-     if (this.useNewStyleLinks)
-       return "org-protocol://"+protocol+"?template="+template+'&url='+this.encoded_url+'&title='+this.escaped_title+'&body='+this.selection_text;
-     else
-       return "org-protocol://"+protocol+":/"+template+'/'+this.encoded_url+'/'+this.escaped_title+'/'+this.selection_text;
+      var template =
+        this.selection_text != ""
+          ? this.selectedTemplate
+          : this.unselectedTemplate;
+      if (this.useNewStyleLinks)
+        return (
+          "org-protocol://" +
+          protocol +
+          "?template=" +
+          template +
+          "&url=" +
+          this.encoded_url +
+          "&title=" +
+          this.escaped_title +
+          "&body=" +
+          this.selection_text
+        );
+      else
+        return (
+          "org-protocol://" +
+          protocol +
+          ":/" +
+          template +
+          "/" +
+          this.encoded_url +
+          "/" +
+          this.escaped_title +
+          "/" +
+          this.selection_text
+        );
     }
 
     constructor() {
       this.window = window;
       this.document = document;
       this.location = location;
-      var docFragment = window.getSelection().getRangeAt(0).cloneContents()
+      var docFragment = window.getSelection().getRangeAt(0).cloneContents();
       var tempDiv = document.createElement("div");
       tempDiv.appendChild(docFragment);
 
@@ -53,7 +85,6 @@
       this.selection_text = escapeIt(window.getSelection().toString());
       this.encoded_url = encodeURIComponent(location.href);
       this.escaped_title = escapeIt(document.title);
-
     }
 
     capture() {
@@ -72,7 +103,10 @@
 
     captureIt(options) {
       if (chrome.runtime.lastError) {
-        alert("Could not capture url. Error loading options: " + chrome.runtime.lastError.message);
+        alert(
+          "Could not capture url. Error loading options: " +
+            chrome.runtime.lastError.message
+        );
         return;
       }
 
@@ -84,32 +118,40 @@
         this.protocol = this.unselectedProtocol;
       }
 
-      for(var k in options) this[k] = options[k];
+      for (var k in options) this[k] = options[k];
       this.protocol = options.selectedProtocol;
       this.capture();
     }
   }
 
-
   function replace_all(str, find, replace) {
-    return str.replace(new RegExp(find, 'g'), replace);
+    return str.replace(new RegExp(find, "g"), replace);
   }
 
   function escapeIt(text) {
-    return replace_all(replace_all(replace_all(encodeURIComponent(text), "[(]", escape("(")),
-                                   "[)]", escape(")")),
-                       "[']" ,escape("'"));
+    return replace_all(
+      replace_all(
+        replace_all(encodeURIComponent(text), "[(]", escape("(")),
+        "[)]",
+        escape(")")
+      ),
+      "[']",
+      escape("'")
+    );
   }
 
   function logURI(uri) {
-    window.console.log("Capturing the following URI with new org-protocol: ", uri);
+    window.console.log(
+      "Capturing the following URI with new org-protocol: ",
+      uri
+    );
     return uri;
   }
 
   function toggleOverlay() {
     var outer_id = "org-capture-extension-overlay";
     var inner_id = "org-capture-extension-text";
-    if (! document.getElementById(outer_id)) {
+    if (!document.getElementById(outer_id)) {
       var outer_div = document.createElement("div");
       outer_div.id = outer_id;
 
@@ -146,7 +188,7 @@
     transform: translate(-50%,-50%);
     -ms-transform: translate(-50%,-50%);
 }`;
-        document.body.appendChild(css);
+      document.body.appendChild(css);
     }
 
     function on() {
@@ -159,11 +201,11 @@
 
     on();
     setTimeout(off, 200);
-
   }
 
-
   var capture = new Capture();
-  var f = function (options) {capture.captureIt(options)};
+  var f = function (options) {
+    capture.captureIt(options);
+  };
   chrome.storage.sync.get(null, f);
 })();
