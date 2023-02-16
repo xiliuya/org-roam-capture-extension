@@ -31,7 +31,7 @@
      var protocol = this.protocol;
 
      if (protocol == "roam-ref")
-       return "org-protocol://"+protocol+"?template="+"r"+'&ref='+this.encoded_url+'&title='+this.escaped_title+'&body='+this.selection_text;
+       return "org-protocol://"+protocol+"?template="+"r"+'&ref='+this.encoded_url+'&title='+this.escaped_title+'&body='+this.selection_html;
 
      var template = (this.selection_text != "" ? this.selectedTemplate : this.unselectedTemplate);
      if (this.useNewStyleLinks)
@@ -44,6 +44,11 @@
       this.window = window;
       this.document = document;
       this.location = location;
+      var docFragment = window.getSelection().getRangeAt(0).cloneContents()
+      var tempDiv = document.createElement("div");
+      tempDiv.appendChild(docFragment);
+
+      this.selection_html = tempDiv.innerHTML;
 
       this.selection_text = escapeIt(window.getSelection().toString());
       this.encoded_url = encodeURIComponent(location.href);
