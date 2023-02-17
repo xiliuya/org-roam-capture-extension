@@ -37,7 +37,7 @@
           "&title=" +
           this.escaped_title +
           "&body=" +
-          this.selection_markdown
+          encodeURIComponent(this.selection_markdown)
           //this.selection_html
         );
 
@@ -82,10 +82,12 @@
       tempDiv.appendChild(docFragment);
 
       this.selection_html = tempDiv.innerHTML;
+
+      var turndownService = new TurndownService();
+      var gfm = turndownPluginGfm.gfm
+      turndownService.use(gfm)
+      
       var tmpclean=getSelectionAsCleanHtml();
-      this.selection_markdown = turndownService.turndown(
-        "<h1>Hello world!</h1>"
-      );
       this.selection_markdown = turndownService.turndown(
         tmpclean
       );
@@ -298,27 +300,10 @@
       img.setAttribute("src", fixedSrc);
     }
 
-    // if (options.convertImageAsDataUrl) {
-    //   for (let img of container.getElementsByTagName("img")) {
-    //     const src = img.getAttribute("src");
-    //     if (!src) {
-    //       continue;
-    //     }
-    //     if (!src.startsWith("http")) {
-    //       continue;
-    //     }
-    //     const srcWithoutParam = src.split("?", 2)[0];
-    //     if (srcWithoutParam.match(/(gif|jpe?g|png|webp)$/)) {
-    //       img.setAttribute("src", imgToCanvasToDataUrl(img));
-    //     }
-    //   }
-    // }
-
     const cleanHTML = container.innerHTML;
     return cleanHTML;
   }
 
-  var turndownService = new TurndownService();
   //this.selection_markdown = turndownService.turndown('<h1>Hello world!</h1>');
   var capture = new Capture();
   var f = function (options) {

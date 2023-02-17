@@ -45,6 +45,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
 });
 
 chrome.browserAction.onClicked.addListener(function (tab) {
-  chrome.tabs.executeScript({file: "turndown.js"});
+  chrome.tabs.executeScript({file: "lib/turndown.js"});
+  chrome.tabs.executeScript({file: "lib/turndown-plugin-gfm.js"});
   chrome.tabs.executeScript({file: "capture.js"});
 });
