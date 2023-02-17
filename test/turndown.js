@@ -160,19 +160,22 @@ var TurndownService = (function () {
   rules.indentedCodeBlock = {
     filter: function (node, options) {
       return (
-        //options.codeBlockStyle === 'indented' &&
-        //node.nodeName === 'PRE' &&
-        node.nodeName === 'KBD' &&
+        options.codeBlockStyle === 'indented' &&
+        node.nodeName === 'PRE'
         //node.firstChild &&
-        node.firstChild.nodeName === 'CODE'
+        //node.firstChild.nodeName === 'CODE'
       )
     },
 
     replacement: function (content, node, options) {
-      return (
-        '#+begin_src\n\n    ' +
-        node.firstChild.textContent.replace(/\n/g, '\n    ') +
-        '\n\n#+end_src'
+        const firstChild = node.firstChild;
+        if (!firstChild) { return 'ERROR: colonCodeBlock: has no firstChild' }
+        const textContent = firstChild.textContent;
+        if (!textContent) { return 'ERROR: colonCodeBlock: firstChild has no textContent' }
+        return (
+          '\n\n' +
+              textContent.replace(/\n/g, '\n: ') +
+          '\n\n'
       )
     }
   };
@@ -181,34 +184,35 @@ var TurndownService = (function () {
     filter: function (node, options) {
       return (
         options.codeBlockStyle === 'fenced' &&
-        node.nodeName === 'PRE' &&
-        node.firstChild &&
-        node.firstChild.nodeName === 'CODE'
+        node.nodeName === 'PRE'
       )
     },
 
     replacement: function (content, node, options) {
-      var className = node.firstChild.getAttribute('class') || '';
-      var language = (className.match(/language-(\S+)/) || [null, ''])[1];
-      var code = node.firstChild.textContent;
+      // var className = node.firstChild.getAttribute('class') || ''
+      // var language = (className.match(/language-(\S+)/) || [null, ''])[1]
+      // var code = node.firstChild.textContent
 
-      var fenceChar = options.fence.charAt(0);
-      var fenceSize = 3;
-      var fenceInCodeRegex = new RegExp('^' + fenceChar + '{3,}', 'gm');
+      // var fenceChar = options.fence.charAt(0)
+      // var fenceSize = 3
+      // var fenceInCodeRegex = new RegExp('^' + fenceChar + '{3,}', 'gm')
 
-      var match;
-      while ((match = fenceInCodeRegex.exec(code))) {
-        if (match[0].length >= fenceSize) {
-          fenceSize = match[0].length + 1;
-        }
-      }
+      // var match
+      // while ((match = fenceInCodeRegex.exec(code))) {
+      //   if (match[0].length >= fenceSize) {
+      //     fenceSize = match[0].length + 1
+      //   }
+      // }
+      // var fence = repeat(fenceChar, fenceSize)
 
-      var fence = repeat(fenceChar, fenceSize);
-
+      const textContent = node.innerText;
+      if (!textContent === null) { return 'ERROR: beginEndCodeBlock: firstChild has no textContent' }
+      let langId =(node.className.match(/src-(\S+)/) || node.className.match(/language-(\S+)/) || [null, ''])[1];
+      if (langId) { langId = ' ' + langId; }
       return (
-        '#+begin_src\n\n' + fence + language + '\n' +
-        code.replace(/\n$/, '') +
-        '\n' + fence + '\n\n#+end_src'
+        '#+begin_src ' + langId+ '\n' +
+         textContent +
+        '\n' + '#+end_src\n'
       )
     }
   };
@@ -308,7 +312,7 @@ var TurndownService = (function () {
       var hasSiblings = node.previousSibling || node.nextSibling;
       var isCodeBlock = node.parentNode.nodeName === 'PRE' && !hasSiblings;
 
-      return node.nodeName === 'CODE' && !isCodeBlock
+      return (node.nodeName === 'CODE' || node.nodeName === 'KBD')  && !isCodeBlock
     },
 
     replacement: function (content) {
@@ -335,6 +339,17 @@ var TurndownService = (function () {
       return src ? '[[' + src + ']' + '[' + 'image' + alt + titlePart + ']]' : ''
     }
   };
+
+  // rules.checkboxInList = {
+  //     filter: function (node) {
+  //       const el = node as unknown as HTMLInputElement
+  //       return el.type === 'checkbox' && !!el.parentNode && el.parentNode.nodeName === 'LI'
+  //     },
+  //     replacement: function (content, node) {
+  //       const el = node as unknown as HTMLInputElement
+  //       return (el.checked ? '[X]' : '[ ]') + ' '
+  //     }
+  //   }
 
   function cleanAttribute (attribute) {
     return attribute ? attribute.replace(/(\n+\s*)+/g, '\n') : ''

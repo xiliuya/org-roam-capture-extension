@@ -83,10 +83,10 @@
 
       this.selection_html = tempDiv.innerHTML;
 
-      var turndownService = new TurndownService();
+      var turndownService = new TurndownService({codeBlockStyle : 'fenced'});
       var gfm = turndownPluginGfm.gfm
       turndownService.use(gfm)
-      
+
       var tmpclean=getSelectionAsCleanHtml();
       this.selection_markdown = turndownService.turndown(
         tmpclean
