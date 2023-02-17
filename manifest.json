@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Org roam Capture",
-  "version": "0.2.3",
+  "version": "0.3.1",
   "description": "A helper for capturing things via org-protocol in emacs: First, set up: http://orgmode.org/worg/org-contrib/org-protocol.html",
   "homepage_url": "https://github.com/xiliuya/org-roam-capture-extension",
 
