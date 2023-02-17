@@ -1,0 +1,7 @@
+[submodule "turndown"]
+    path = turndown
+    url = git@github.com:xiliuya/turndown-org.git
+[submodule "turndown-plugin-gfm"]
+    path = turndown-plugin-gfm
+    url = git@github.com:xiliuya/turndown-plugin-gfm.git
+
