@@ -37,7 +37,8 @@
           "&title=" +
           this.escaped_title +
           "&body=" +
-          this.selection_html
+          this.selection_markdown
+          //this.selection_html
         );
 
       var template =
@@ -81,6 +82,14 @@
       tempDiv.appendChild(docFragment);
 
       this.selection_html = tempDiv.innerHTML;
+      var tmpclean=getSelectionAsCleanHtml();
+      this.selection_markdown = turndownService.turndown(
+        "<h1>Hello world!</h1>"
+      );
+      this.selection_markdown = turndownService.turndown(
+        tmpclean
+      );
+      console.log(this.selection_markdown);
 
       this.selection_text = escapeIt(window.getSelection().toString());
       this.encoded_url = encodeURIComponent(location.href);
@@ -202,7 +211,115 @@
     on();
     setTimeout(off, 200);
   }
+  function imgToCanvasToDataUrl(imgEl) {
+    return new Promise((resolve) => {
+      let img = new Image();
+      img.setAttribute("crossorigin", "anonymous"); // TODO: What is this?
+      img.onload = function () {
+        let canvas = document.createElement("canvas");
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        canvas.drawImage(img, 0, 0);
+        imgEl.setAttribute("src", canvas.toDataURL("image/png"));
+        resolve(imgEl.src);
+      };
+    });
+  }
 
+  function getSelectionAsCleanHtml() {
+    let selection = document.getSelection();
+    if (!selection) {
+      console.error("[To Developer] document.getSelection() is null???");
+      return "ERROR";
+    }
+    if (selection.rangeCount === 0) {
+      let frames = document.getElementsByTagName("iframe");
+      if (frames) {
+        for (let i = 0; i < frames.length; i++) {
+          const frame = frames[i];
+          const contentDocument = frame.contentDocument;
+          if (!contentDocument) {
+            continue;
+          }
+          const tmpSel = contentDocument.getSelection();
+          if (!tmpSel) {
+            continue;
+          }
+          if (tmpSel.rangeCount > 0) {
+            selection = tmpSel;
+            break; // NOTE: Right?
+          }
+        }
+      }
+    }
+
+    if (selection.rangeCount === 0) {
+      console.log(
+        "[INFO] document.getSelection().rangeCount is 0. Return empty string."
+      );
+      return "";
+    }
+
+    const container = document.createElement("div");
+
+    for (let i = 0; i < selection.rangeCount; ++i) {
+      container.appendChild(selection.getRangeAt(i).cloneContents());
+    }
+
+    for (let a of container.getElementsByTagName("a")) {
+      const href = a.getAttribute("href");
+      if (!href) {
+        continue;
+      }
+      if (href.startsWith("http")) {
+        continue;
+      }
+      // const fixedHref = url.resolve(document.URL, href);
+      // a.setAttribute("href", fixedHref);
+      // url.resolve 已废弃
+      const fixedHref = new URL(href,document.URL);
+      a.setAttribute("href", fixedHref);
+    }
+
+    for (let img of container.getElementsByTagName("img")) {
+      const src = img.getAttribute("src");
+      if (!src) {
+        continue;
+      }
+      if (src.startsWith("http")) {
+        continue;
+      }
+      if (src.startsWith("data:")) {
+        continue;
+      }
+      // const fixedSrc = url.resolve(document.URL, src);
+      // img.setAttribute("src", fixedSrc);
+      const fixedSrc = new URL("src",document.URL);
+      img.setAttribute("src", fixedSrc);
+    }
+
+    // if (options.convertImageAsDataUrl) {
+    //   for (let img of container.getElementsByTagName("img")) {
+    //     const src = img.getAttribute("src");
+    //     if (!src) {
+    //       continue;
+    //     }
+    //     if (!src.startsWith("http")) {
+    //       continue;
+    //     }
+    //     const srcWithoutParam = src.split("?", 2)[0];
+    //     if (srcWithoutParam.match(/(gif|jpe?g|png|webp)$/)) {
+    //       img.setAttribute("src", imgToCanvasToDataUrl(img));
+    //     }
+    //   }
+    // }
+
+    const cleanHTML = container.innerHTML;
+    return cleanHTML;
+  }
+
+  var turndownService = new TurndownService();
+  //this.selection_markdown = turndownService.turndown('<h1>Hello world!</h1>');
   var capture = new Capture();
   var f = function (options) {
     capture.captureIt(options);
