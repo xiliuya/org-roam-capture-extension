@@ -3,5 +3,5 @@
     url = git@github.com:xiliuya/turndown-org.git
 [submodule "turndown-plugin-gfm"]
     path = turndown-plugin-gfm
-    url = git@github.com:xiliuya/turndown-plugin-gfm.git
+    url = git@github.com:xiliuya/turndown-plugin-gfm-org.git
 
