@@ -6,5 +6,8 @@ lib/turndown-plugin-gfm.js:
 	cp turndown-plugin-gfm/dist/turndown-plugin-gfm.js ./lib/
 ext: lib/turndown.js lib/turndown-plugin-gfm.js
 	web-ext build -i turndown/ turndown-plugin-gfm/ test/ Makefile
+dep:
+	cd turndown/;	npm install
+	cd turndown-plugin-gfm/;	npm install
 clean:
 	-rm -f ./lib/*.js ./web-ext-artifacts/*

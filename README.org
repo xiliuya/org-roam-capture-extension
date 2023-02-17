@@ -3,24 +3,25 @@
 * Org Roam Capture Extension
 Fork with [[https://github.com/sprig/org-capture-extension][org-capture-extension]] .
 This is an extension for Google Chrome (tm) and Firefox (tm) which adds a "Capture" button, sending the site address, title, and selected text (if any) to emacs via org-protocol, see the [Org-Mode site] for instructions for setting that up org-protocol.
-* Get start
+* Getting started
 - Set your org-roam templates
 #+begin_src emacs-lisp :tangle yes
-    (defun zp/org-protocol-insert-selection-dwim (selection)
-      "Insert SELECTION as an org blockquote."
-      (unless (string= selection "")
-        (format "#+begin_quote\n%s\n#+end_quote" selection)))
+  (defun zp/org-protocol-insert-selection-dwim (selection)
+    "Insert SELECTION as an org blockquote."
+    (unless (string= selection "")
+      ;;(format "#+begin_quote\n%s\n#+end_quote" selection)
+      (format "\n%s\n" selection)))
 
-    (setq org-roam-capture-ref-templates
+  (setq org-roam-capture-ref-templates
 
-          '(("r" "ref" plain "* %U\n
-    %(zp/org-protocol-insert-selection-dwim \"%i\")%?"
-             :target (file+head "web/${slug}.org"
-                                "#+title: ${title}\n
-    ,#+roam_key: ${ref}\n
-    ,#+created: %u\n"
-                                )
-             :unnarrowed t)))
+        '(("r" "ref" plain "* %U\n
+  %(zp/org-protocol-insert-selection-dwim \"%i\")%?"
+           :target (file+head "web/${slug}.org"
+                              "#+title: ${title}\n
+  ,#+roam_key: ${ref}\n
+  ,#+created: %u\n"
+                              )
+           :unnarrowed t)))
 #+end_src
 - Set org-roam dir
 #+begin_src emacs-lisp :tangle yes
@@ -28,3 +29,22 @@ This is an extension for Google Chrome (tm) and Firefox (tm) which adds a "Captu
 #+end_src
 - Seting org-protocol
 See [[file:README.old.md][README_old.md]] .
+- Install extension
+Firefox:
+[[https://addons.mozilla.org/zh-CN/firefox/addon/org-roam-capture-extension/][Org roam Capture]] .
+* Development
+#+begin_src shell :tangle no :shebang #!/bin/bash
+  git clone --recurse-submodules https://github.com/xiliuya/org-roam-capture-extension
+  cd org-roam-capture-extension
+  make dep #run some `npm install`
+  make ext #run some `npm build`
+#+end_src
+
+* Acknowedgement
+
+This project referred, forked, or used some parts of the codes from the other projects:
+
+| Project URL           | Usage                                | Licenses of Used Parts |
+| [[https://github.com/mixmark-io/turndown][mixmark-io/turndown]]   | Forked as HTML to Org-Mode converter | MIT                    |
+| [[https://github.com/sprig/org-capture-extension][org-capture-extension]] | Forked as to org-roam                | MIT                    |
+| [[https://github.com/kuanyui/copy-as-org-mode][copy-as-org-mode]]      | Copy some html2org code              | MPL-2.0                |
