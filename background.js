@@ -20,6 +20,30 @@
 // THE SOFTWARE.								 //
 ///////////////////////////////////////////////////////////////////////////////////
 
+function onExecuted(result) {
+  console.log(`We executed capture.js`);
+}
+
+function onExecutedTurndownPlugin(result) {
+  console.log(`We executed turndown.js`);
+  var turndown_plugin_exec = browser.tabs.executeScript({ file: "lib/turndown-plugin-gfm.js" });
+  turndown_plugin_exec.then(onExecutedCapture, onError);
+}
+
+function onExecutedCapture(result) {
+  console.log(`We executed turndown-plugin-gfm.js`);
+  var capture_exec = browser.tabs.executeScript({ file: "capture.js" });
+   capture_exec.then(onExecuted, onError);
+}
+function onError(error) {
+  console.log(`Error: ${error}`);
+}
+
+function runScripts() {
+  var turndown_exec = browser.tabs.executeScript({ file: "lib/turndown.js" });
+  turndown_exec.then( onExecutedTurndownPlugin, onError);
+}
+
 chrome.runtime.onInstalled.addListener(function (details) {
   if (details.reason == "install")
     chrome.storage.sync.set({
@@ -46,11 +70,11 @@ chrome.runtime.onInstalled.addListener(function (details) {
 
 
 chrome.browserAction.onClicked.addListener(function (tab) {
-  // var turndown_exec = browser.tabs.executeScript({ file: "lib/turndown.js" });
-  // turndown_exec.then(onExecuted, onError);
-  chrome.tabs.executeScript({ file: "lib/turndown.js" });
-  chrome.tabs.executeScript({ file: "lib/turndown-plugin-gfm.js" });
-  chrome.tabs.executeScript({ file: "capture.js" });
+  // chrome.tabs.executeScript({ file: "lib/turndown.js" });
+  // chrome.tabs.executeScript({ file: "lib/turndown-plugin-gfm.js" });
+  // chrome.tabs.executeScript({ file: "capture.js" });
+  // fix some time turndown.js not load.
+  runScripts();
 });
 
 
@@ -74,8 +98,6 @@ browser.menus.create(
 browser.menus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "org-capture-selection") {
     // console.log(info.selectionText);
-    chrome.tabs.executeScript({ file: "lib/turndown.js" });
-    chrome.tabs.executeScript({ file: "lib/turndown-plugin-gfm.js" });
-    chrome.tabs.executeScript({ file: "capture.js" });
+    runScripts();
   }
 });
