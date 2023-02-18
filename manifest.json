@@ -1,15 +1,19 @@
 {
   "manifest_version": 2,
   "name": "Org roam Capture",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "A helper for capturing things via org-protocol in emacs: First, set up: http://orgmode.org/worg/org-contrib/org-protocol.html",
   "homepage_url": "https://github.com/xiliuya/org-roam-capture-extension",
+  "icons": {
+        "256": "img/icon.png"
+    },
 
   "background": {
     "persistent": false,
     "scripts": ["background.js"]
   },
 
+  "web_accessible_resources": ["img/*.png"],
   "permissions": ["activeTab", "menus", "storage"],
 
   "options_ui": {
@@ -17,7 +21,9 @@
   },
 
   "browser_action": {
-    "default_icon": "org-mode-unicorn.png"
+    "browser_style": true,
+    "default_icon": "img/icon.png",
+    "default_title": "Capture selection (Ctrl+Shift+L)"
   },
 
   "commands": {

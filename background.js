@@ -84,8 +84,9 @@ browser.menus.create(
     title: "Capture Selection",
     contexts: ["selection"],
     documentUrlPatterns: ["<all_urls>"],  // "https://*" not works...
-    "icons": {
-        "16": "org-mode-unicorn.svg"
+    icons: {
+      "16": "img/icon16.png",
+        "32": "img/icon32.png"
       }
   },
   () => {
