@@ -20,32 +20,62 @@
 // THE SOFTWARE.								 //
 ///////////////////////////////////////////////////////////////////////////////////
 
-
 chrome.runtime.onInstalled.addListener(function (details) {
   if (details.reason == "install")
-    chrome.storage.sync.set(
-      {
-        selectedProtocol: 'roam-ref',
-        selectedTemplate: 'p',
-        unselectedTemplate: 'L',
-        useNewStyleLinks: true,
-        debug: false,
-        overlay: true
-      });
-  else if ((details.reason == "update" && details.previousVersion.startsWith("0.1")))
-    chrome.storage.sync.set(
-      {
-        selectedProtocol: 'roam-ref',
-        selectedTemplate: 'p',
-        unselectedTemplate: 'L',
-        useNewStyleLinks: false,
-        debug: false,
-        overlay: true
-      });
+    chrome.storage.sync.set({
+      selectedProtocol: "roam-ref",
+      selectedTemplate: "p",
+      unselectedTemplate: "L",
+      useNewStyleLinks: true,
+      debug: false,
+      overlay: true,
+    });
+  else if (
+    details.reason == "update" &&
+    details.previousVersion.startsWith("0.1")
+  )
+    chrome.storage.sync.set({
+      selectedProtocol: "roam-ref",
+      selectedTemplate: "p",
+      unselectedTemplate: "L",
+      useNewStyleLinks: false,
+      debug: false,
+      overlay: true,
+    });
 });
 
+
 chrome.browserAction.onClicked.addListener(function (tab) {
-  chrome.tabs.executeScript({file: "lib/turndown.js"});
-  chrome.tabs.executeScript({file: "lib/turndown-plugin-gfm.js"});
-  chrome.tabs.executeScript({file: "capture.js"});
+  // var turndown_exec = browser.tabs.executeScript({ file: "lib/turndown.js" });
+  // turndown_exec.then(onExecuted, onError);
+  chrome.tabs.executeScript({ file: "lib/turndown.js" });
+  chrome.tabs.executeScript({ file: "lib/turndown-plugin-gfm.js" });
+  chrome.tabs.executeScript({ file: "capture.js" });
+});
+
+
+browser.menus.create(
+  {
+    id: "org-capture-selection",
+    title: "Capture Selection",
+    contexts: ["selection"],
+    documentUrlPatterns: ["<all_urls>"],  // "https://*" not works...
+    "icons": {
+        "16": "org-mode-unicorn.svg"
+      }
+  },
+  () => {
+    if (browser.runtime.lastError)
+      console.log(`Error: ${browser.runtime.lastError}`)
+  }
+)
+
+
+browser.menus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === "org-capture-selection") {
+    // console.log(info.selectionText);
+    chrome.tabs.executeScript({ file: "lib/turndown.js" });
+    chrome.tabs.executeScript({ file: "lib/turndown-plugin-gfm.js" });
+    chrome.tabs.executeScript({ file: "capture.js" });
+  }
 });
